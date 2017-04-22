@@ -1,7 +1,11 @@
 package nz.co.jammehcow.jenkinsdiscord;
 
 import com.google.common.primitives.UnsignedInteger;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -26,35 +30,38 @@ class DiscordWebhook {
     public DiscordWebhook(String url) {
         this.webhookUrl = url;
         this.obj = new JSONObject();
-        this.obj.append("content", null);
+        this.obj.put("username", "Jenkins");
+        this.obj.put("avatar_url", "https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png");
         this.embed = new JSONObject();
-        this.embed.append("footer", new JSONObject().append("text", "Jenkins Discord Webhook plugin made by jammehcow"));
-        this.embed.append("type", "rich");
-        this.embed.append("thumbnail", new JSONObject().append("url", "https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png"));
+        this.embed.put("footer", new JSONObject().append("text", "Jenkins Discord Webhook plugin made by jammehcow"));
     }
 
     public DiscordWebhook setTitle(String title) {
-        this.embed.append("title", title);
+        this.embed.put("title", title);
         return this;
     }
 
     public DiscordWebhook setURL(String buildUrl) {
-        this.embed.append("url", buildUrl);
+        //this.embed.put("url", buildUrl);
         return this;
     }
 
     public DiscordWebhook setStatus(boolean isSuccess) {
-        this.embed.append("color", (isSuccess) ? Color.GREEN : Color.RED);
+        this.embed.put("color", (isSuccess) ? Color.GREEN.code : Color.RED.code);
         return this;
     }
 
     public DiscordWebhook setDescription(String content) {
-        this.embed.append("description", content);
+        this.embed.put("description", content);
         return this;
     }
 
     public void send() {
-        Unirest.setDefaultHeader("Content-Type", "application/json");
-        Unirest.post(this.webhookUrl).body(this.obj);
+        this.obj.put("embeds", new JSONArray().put(this.embed));
+        System.out.println(this.obj.toString(2));
+        try {
+            HttpResponse<JsonNode> response = Unirest.post(this.webhookUrl).header("Content-Type", "application/json").body(this.obj).asJson();
+            System.out.println(response.getBody().toString());
+        } catch (UnirestException e) { e.printStackTrace(); }
     }
 }

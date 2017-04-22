@@ -21,18 +21,32 @@ import org.kohsuke.stapler.QueryParameter;
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
 
-    // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public WebhookPublisher(String name) { this.webhookURL = name; }
+    public WebhookPublisher(String webhookURL) { this.webhookURL = webhookURL; }
 
-    public String getName() { return this.webhookURL; }
+    public String getWebhookURL() { return this.webhookURL; }
+
+    @Override
+    public boolean needsToRunAfterFinalized() { return true; }
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+        System.out.println("Inside 1");
+
         if (this.webhookURL.isEmpty()) {
             listener.getLogger().println("Discord webhook is not set!");
             return true;
         }
+
+        System.out.println("Inside 2");
+
+        DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
+        wh.setTitle(build.getDisplayName());
+        wh.setDescription(build.getBuildStatusSummary().message);
+        wh.setStatus(build.getResult().isCompleteBuild());
+        wh.setURL(build.getUrl());
+        wh.send();
+
         return true;
     }
 
@@ -40,21 +54,14 @@ public class WebhookPublisher extends Notifier {
     public BuildStepMonitor getRequiredMonitorService() { return BuildStepMonitor.NONE; }
 
 
-    // Overridden for better type safety.
-    // If your plugin doesn't really define any property on Descriptor,
-    // you don't have to do this.
     @Override
-    public DescriptorImpl getDescriptor() {
-        return (DescriptorImpl) super.getDescriptor();
-    }
-    @Extension // This indicates to Jenkins that this is an implementation of an extension point.
+    public DescriptorImpl getDescriptor() { return (DescriptorImpl) super.getDescriptor(); }
+
+    @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
 
-        public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            // Indicates that this builder can be used with all kinds of project types
-            return true;
-        }
+        public boolean isApplicable(Class<? extends AbstractProject> aClass) { return true; }
 
         public FormValidation doCheckWebhookURL(@QueryParameter String value) {
             // TODO: regex tester.
@@ -63,9 +70,6 @@ public class WebhookPublisher extends Notifier {
             return FormValidation.ok();
         }
 
-        /**
-         * This human readable name is used in the configuration screen.
-         */
         public String getDisplayName() { return "Discord Webhook"; }
 
     }
