@@ -31,18 +31,18 @@ public class WebhookPublisher extends Notifier {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        System.out.println("Inside 1");
-
         if (this.webhookURL.isEmpty()) {
             listener.getLogger().println("Discord webhook is not set!");
             return true;
         }
 
-        System.out.println("Inside 2");
+        StringBuilder changesList = new StringBuilder();
+
+        for (Object o : build.getChangeSet().getItems()) changesList.append(" - *").append(o.toString()).append("*\n");
 
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
-        wh.setTitle(build.getDisplayName());
-        wh.setDescription(build.getBuildStatusSummary().message);
+        wh.setTitle(build.getProject().getDisplayName() + " " + build.getDisplayName());
+        wh.setDescription("**Build:** " + build.getBuildStatusSummary().message + "\n**Changes:**\n" + changesList.toString());
         wh.setStatus(build.getResult().isCompleteBuild());
         wh.setURL(build.getUrl());
         wh.send();
