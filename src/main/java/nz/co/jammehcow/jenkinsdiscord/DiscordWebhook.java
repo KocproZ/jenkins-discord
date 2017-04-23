@@ -33,7 +33,7 @@ class DiscordWebhook {
         this.obj.put("username", "Jenkins");
         this.obj.put("avatar_url", "https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png");
         this.embed = new JSONObject();
-        this.embed.put("footer", new JSONObject().append("text", "Jenkins Discord Webhook plugin made by jammehcow"));
+        this.embed.put("footer", new JSONObject().put("text", "Jenkins Discord Webhook plugin made by jammehcow"));
     }
 
     public DiscordWebhook setTitle(String title) {
