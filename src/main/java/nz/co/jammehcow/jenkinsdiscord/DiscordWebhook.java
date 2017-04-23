@@ -42,7 +42,7 @@ class DiscordWebhook {
     }
 
     public DiscordWebhook setURL(String buildUrl) {
-        //this.embed.put("url", buildUrl);
+        this.embed.put("url", buildUrl);
         return this;
     }
 
