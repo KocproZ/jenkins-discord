@@ -5,11 +5,14 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.Run;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
+import jenkins.model.JenkinsLocationConfiguration;
+import nz.co.jammehcow.jenkinsdiscord.exception.WebhookException;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -33,8 +36,13 @@ public class WebhookPublisher extends Notifier {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+        JenkinsLocationConfiguration globalConfig = new JenkinsLocationConfiguration();
+
         if (this.webhookURL.isEmpty()) {
-            listener.getLogger().println("Discord webhook is not set!");
+            listener.getLogger().println("The Discord webhook is not set!");
+            return true;
+        } else if (globalConfig.getUrl().isEmpty() || globalConfig.getUrl().contains("http://localhost")) {
+            listener.getLogger().println("Your Jenkins URL is not set or is localhost!");
             return true;
         }
 
@@ -42,12 +50,25 @@ public class WebhookPublisher extends Notifier {
 
         for (Object o : build.getChangeSet().getItems()) changesList.append(" - *").append(o.toString()).append("*\n");
 
+        StringBuilder artifacts = new StringBuilder();
+
+        for (Object a : build.getArtifacts()) {
+            Run.Artifact artifact = (Run.Artifact) a;
+            artifacts.append(" - ").append(globalConfig.getUrl()).append(artifact.getHref()).append("\n");
+        }
+
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
-        wh.setTitle(build.getProject().getDisplayName() + " " + build.getDisplayName());
-        wh.setDescription("**Build:** " + build.getBuildStatusSummary().message + "\n**Changes:**\n" + changesList.toString());
-        wh.setStatus(build.getResult().isCompleteBuild());
-        wh.setURL(build.getUrl());
-        wh.send();
+        wh.setTitle(build.getProject().getDisplayName() + " " + build.getId());
+        wh.setDescription("**Build:**  #" + build.getId() +
+                "\n**Status:**  " + ((build.getBuildStatusSummary().message.equals("stable")) ? "Success" : "Failure") +
+                ((changesList.length() != 0) ? "\n**Changes:**\n" + changesList.toString() : "") +
+                ((artifacts.length() != 0) ? "\n**Artifacts:**\n" + artifacts.toString() : ""));
+        wh.setStatus(build.getBuildStatusSummary().message.equals("stable"));
+        wh.setURL(globalConfig.getUrl() + build.getUrl());
+        wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
+
+        try { wh.send(); }
+        catch (WebhookException e) { e.printStackTrace(); }
 
         return true;
     }
@@ -71,8 +92,6 @@ public class WebhookPublisher extends Notifier {
                 return FormValidation.error("Please enter a valid Discord webhook URL.");
             return FormValidation.ok();
         }
-
-        public String getDisplayName() { return "Discord Webhook"; }
 
         public String getDisplayName() { return NAME; }
 
