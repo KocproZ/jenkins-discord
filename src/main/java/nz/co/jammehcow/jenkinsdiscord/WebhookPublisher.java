@@ -20,6 +20,8 @@ import org.kohsuke.stapler.QueryParameter;
 
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
+    private static final String NAME = "Discord Webhook";
+    private static final String VERSION = "1.0.0";
 
     @DataBoundConstructor
     public WebhookPublisher(String webhookURL) { this.webhookURL = webhookURL; }
@@ -72,5 +74,8 @@ public class WebhookPublisher extends Notifier {
 
         public String getDisplayName() { return "Discord Webhook"; }
 
+        public String getDisplayName() { return NAME; }
+
+        public String getVersion() { return VERSION; }
     }
 }
