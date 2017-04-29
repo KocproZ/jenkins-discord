@@ -7,6 +7,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import nz.co.jammehcow.jenkinsdiscord.exception.WebhookException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -61,10 +62,14 @@ class DiscordWebhook {
 
     public void send() throws WebhookException {
         this.obj.put("embeds", new JSONArray().put(this.embed));
-        System.out.println(this.obj.toString(2));
+
         try {
             HttpResponse<JsonNode> response = Unirest.post(this.webhookUrl).header("Content-Type", "application/json").body(this.obj).asJson();
-            System.out.println(response.getBody().toString());
+
+            try {
+                response.getBody().getObject().get("embeds");
+                throw new WebhookException(response.getBody().getObject().toString(2));
+            } catch (JSONException ignored) {}
         } catch (UnirestException e) { e.printStackTrace(); }
     }
 }
