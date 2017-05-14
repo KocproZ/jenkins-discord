@@ -69,17 +69,17 @@ public class WebhookPublisher extends Notifier {
             artifacts.append(" - ").append(globalConfig.getUrl()).append(artifact.getHref()).append("\n");
         }
 
-        String buildStatus = (build.getResult().isBetterOrEqualTo(Result.SUCCESS)) ? "Success" : "Failure";
+        boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
 
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
         wh.setTitle(build.getProject().getDisplayName() + " " + build.getId());
         wh.setDescription(
                 "**Build:**  #" + build.getId() +
-                "\n**Status:**  " + buildStatus +
+                "\n**Status:**  " + ((buildStatus) ? "Success" : "Failure") +
                 ((changesList.length() != 0) ? "\n**Changes:**\n" + changesList.toString() : "\n**No changes.**\n") +
                 ((artifacts.length() != 0) ? "\n**Artifacts:**\n" + artifacts.toString() : "**No artifacts to be found.**")
         );
-        wh.setStatus(build.getBuildStatusSummary().message.equals("stable"));
+        wh.setStatus(buildStatus);
         wh.setURL(globalConfig.getUrl() + build.getUrl());
         wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
 
