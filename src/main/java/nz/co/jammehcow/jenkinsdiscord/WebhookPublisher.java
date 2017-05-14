@@ -46,9 +46,6 @@ public class WebhookPublisher extends Notifier {
 
         StringBuilder changesList = new StringBuilder();
 
-        System.out.println(build.getBuildVariables().get("GIT_URL"));
-        System.out.println(build.getProject().getScm().getType());
-
         for (Object o : build.getChangeSet().getItems()) {
             ChangeLogSet.Entry en = (ChangeLogSet.Entry) o;
             changesList.append(" - *")
