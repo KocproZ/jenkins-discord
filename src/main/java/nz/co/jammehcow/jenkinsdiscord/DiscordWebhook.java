@@ -67,7 +67,7 @@ class DiscordWebhook {
             HttpResponse<JsonNode> response = Unirest.post(this.webhookUrl).header("Content-Type", "application/json").body(this.obj).asJson();
 
             try {
-                response.getBody().getObject().get("embeds");
+                if (response.getBody() == null || response.getBody().getObject().get("embeds") == null) throw new JSONException("Expected.");
                 throw new WebhookException(response.getBody().getObject().toString(2));
             } catch (JSONException ignored) {}
         } catch (UnirestException e) { e.printStackTrace(); }
