@@ -21,7 +21,7 @@ import org.kohsuke.stapler.QueryParameter;
 
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
-    private static final String NAME = "Discord Webhook";
+    private static final String NAME = "Discord Notifier";
     private static final String VERSION = "1.0.0";
 
     @DataBoundConstructor
