@@ -14,7 +14,6 @@ import org.json.JSONObject;
  * Author: jammehcow.
  * Date: 22/04/17.
  */
-
 class DiscordWebhook {
     private String webhookUrl;
     private JSONObject obj;

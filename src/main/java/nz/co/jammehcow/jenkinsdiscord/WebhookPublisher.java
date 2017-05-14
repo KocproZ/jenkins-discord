@@ -2,10 +2,8 @@ package nz.co.jammehcow.jenkinsdiscord;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.Run;
+import hudson.model.*;
+import hudson.scm.ChangeLogSet;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
@@ -48,7 +46,21 @@ public class WebhookPublisher extends Notifier {
 
         StringBuilder changesList = new StringBuilder();
 
-        for (Object o : build.getChangeSet().getItems()) changesList.append(" - *").append(o.toString()).append("*\n");
+        System.out.println(build.getBuildVariables().get("GIT_URL"));
+        System.out.println(build.getProject().getScm().getType());
+
+        for (Object o : build.getChangeSet().getItems()) {
+            ChangeLogSet.Entry en = (ChangeLogSet.Entry) o;
+            changesList.append(" - *")
+                    .append("``")
+                    .append(en.getCommitId())
+                    .append("``")
+                    .append(" ")
+                    .append(en.getMsg())
+                    .append(" - ")
+                    .append(en.getAuthor())
+                    .append("*\n");
+        }
 
         StringBuilder artifacts = new StringBuilder();
 
@@ -57,12 +69,16 @@ public class WebhookPublisher extends Notifier {
             artifacts.append(" - ").append(globalConfig.getUrl()).append(artifact.getHref()).append("\n");
         }
 
+        String buildStatus = (build.getResult().isBetterOrEqualTo(Result.SUCCESS)) ? "Success" : "Failure";
+
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
         wh.setTitle(build.getProject().getDisplayName() + " " + build.getId());
-        wh.setDescription("**Build:**  #" + build.getId() +
-                "\n**Status:**  " + ((build.getBuildStatusSummary().message.equals("stable")) ? "Success" : "Failure") +
-                ((changesList.length() != 0) ? "\n**Changes:**\n" + changesList.toString() : "") +
-                ((artifacts.length() != 0) ? "\n**Artifacts:**\n" + artifacts.toString() : ""));
+        wh.setDescription(
+                "**Build:**  #" + build.getId() +
+                "\n**Status:**  " + buildStatus +
+                ((changesList.length() != 0) ? "\n**Changes:**\n" + changesList.toString() : "\n**No changes.**\n") +
+                ((artifacts.length() != 0) ? "\n**Artifacts:**\n" + artifacts.toString() : "**No artifacts to be found.**")
+        );
         wh.setStatus(build.getBuildStatusSummary().message.equals("stable"));
         wh.setURL(globalConfig.getUrl() + build.getUrl());
         wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
