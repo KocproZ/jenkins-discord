@@ -69,12 +69,12 @@ public class WebhookPublisher extends Notifier {
         boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
 
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
-        wh.setTitle(build.getProject().getDisplayName() + " " + build.getId());
+        wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());
         wh.setDescription(
                 "**Build:**  #" + build.getId() +
                 "\n**Status:**  " + (build.getResult().toString().toLowerCase()) +
-                ((changesList.length() != 0) ? "\n**Changes:**\n" + changesList.toString() : "\n**No changes.**\n") +
-                ((artifacts.length() != 0) ? "\n**Artifacts:**\n" + artifacts.toString() : "**No artifacts to be found.**")
+                ((changesList.length() != 0) ? "\n**Changes:**\n" + changesList.toString() : "\n*No changes.*\n") +
+                ((artifacts.length() != 0) ? "\n**Artifacts:**\n" + artifacts.toString() : "*No artifacts to be found.*")
         );
         wh.setStatus(buildStatus);
         wh.setURL(globalConfig.getUrl() + build.getUrl());
