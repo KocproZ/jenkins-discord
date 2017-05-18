@@ -92,8 +92,7 @@ public class WebhookPublisher extends Notifier {
         public boolean isApplicable(Class<? extends AbstractProject> aClass) { return true; }
 
         public FormValidation doCheckWebhookURL(@QueryParameter String value) {
-            // TODO: regex tester.
-            if (!value.startsWith("https://discordapp.com/api/webhooks/"))
+            if (!value.matches("https://discordapp\\.com/api/webhooks/\\d{18}/(\\w|-|_)*(/?)"))
                 return FormValidation.error("Please enter a valid Discord webhook URL.");
             return FormValidation.ok();
         }
