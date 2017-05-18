@@ -48,15 +48,7 @@ public class WebhookPublisher extends Notifier {
 
         for (Object o : build.getChangeSet().getItems()) {
             ChangeLogSet.Entry en = (ChangeLogSet.Entry) o;
-            changesList.append(" - *")
-                    .append("``")
-                    .append(en.getCommitId())
-                    .append("``")
-                    .append(" ")
-                    .append(en.getMsg())
-                    .append(" - ")
-                    .append(en.getAuthor())
-                    .append("*\n");
+            changesList.append(formatSCMChange(en));
         }
 
         StringBuilder artifacts = new StringBuilder();
@@ -109,5 +101,9 @@ public class WebhookPublisher extends Notifier {
         public String getDisplayName() { return NAME; }
 
         public String getVersion() { return VERSION; }
+    }
+
+    private static String formatSCMChange(ChangeLogSet.Entry entry) {
+        return "   - ``" + entry.getCommitId().substring(0, 6) + "`` *" + entry.getMsg() + " - " + entry.getAuthor() + "*\n";
     }
 }
