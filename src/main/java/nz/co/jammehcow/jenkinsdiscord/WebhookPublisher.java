@@ -55,7 +55,7 @@ public class WebhookPublisher extends Notifier {
 
         for (Object a : build.getArtifacts()) {
             Run.Artifact artifact = (Run.Artifact) a;
-            artifacts.append(" - ").append(globalConfig.getUrl()).append(artifact.getHref()).append("\n");
+            artifacts.append(" - ").append(globalConfig.getUrl()).append(build.getUrl()).append("artifact/").append(artifact.getHref()).append("\n");
         }
 
         boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
