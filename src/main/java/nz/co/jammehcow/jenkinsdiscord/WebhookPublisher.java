@@ -103,6 +103,6 @@ public class WebhookPublisher extends Notifier {
     }
 
     private static String formatSCMChange(ChangeLogSet.Entry entry) {
-        return "   - ``" + entry.getCommitId().substring(0, 6) + "`` *" + entry.getMsg() + " - " + entry.getAuthor() + "*\n";
+        return "   - ``" + entry.getCommitId().substring(0, 6) + "`` *" + entry.getMsg() + " - " + entry.getAuthor().getDisplayName() + "*\n";
     }
 }
