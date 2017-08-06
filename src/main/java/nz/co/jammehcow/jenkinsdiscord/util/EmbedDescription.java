@@ -33,7 +33,9 @@ public class EmbedDescription {
         } else {
             for (Object o : changes) {
                 ChangeLogSet.Entry entry = (ChangeLogSet.Entry) o;
-                this.changesList.add("   - ``" + entry.getCommitId().substring(0, 6) + "`` *" + entry.getMsg() + " - " + entry.getAuthor().getFullName() + "*\n");
+                String commitID = (entry.getCommitId().length() > 7) ? entry.getCommitId().substring(0, 6) : entry.getCommitId();
+
+                this.changesList.add("   - ``" + commitID + "`` *" + entry.getMsg() + " - " + entry.getAuthor().getFullName() + "*\n");
             }
         }
 
