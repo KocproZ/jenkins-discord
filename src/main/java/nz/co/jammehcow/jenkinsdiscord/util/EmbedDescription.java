@@ -26,7 +26,6 @@ public class EmbedDescription {
         this.changesList.add("\n**Changes:**\n");
         this.artifactsList.add("\n**Artifacts:**\n");
         Object[] changes = build.getChangeSet().getItems();
-        List artifacts = build.getArtifacts();
 
         if (changes.length == 0) {
             this.changesList.add("\n*No changes.*\n");
@@ -39,11 +38,11 @@ public class EmbedDescription {
             }
         }
 
+        List<Run.Artifact> artifacts = build.getArtifacts();
         if (artifacts.size() == 0) {
             this.artifactsList.add("\n*No artifacts to be found.*");
         } else {
-            for (Object o : artifactsList) {
-                Run.Artifact artifact = (Run.Artifact) o;
+            for (Run.Artifact artifact : artifacts) {
                 this.artifactsList.add(" - " + artifactsURL + artifact.getHref() + "\n");
             }
         }
