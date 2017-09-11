@@ -6,7 +6,6 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Result;
-import hudson.scm.ChangeLogSet;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
@@ -99,9 +98,5 @@ public class WebhookPublisher extends Notifier {
         public String getDisplayName() { return NAME; }
 
         public String getVersion() { return VERSION; }
-    }
-
-    private static String formatSCMChange(ChangeLogSet.Entry entry) {
-        return "";
     }
 }
