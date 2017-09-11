@@ -58,6 +58,13 @@ public class WebhookPublisher extends Notifier {
             return true;
         }
 
+        if (this.sendOnStateChange) {
+            if (build.getBuildStatusSummary().message.equals(build.getPreviousBuild().getBuildStatusSummary().message)) {
+                // Stops the webhook payload being created if the status is the same as the previous
+                return true;
+            }
+        }
+
         boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
 
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
