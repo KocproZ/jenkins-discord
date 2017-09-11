@@ -47,7 +47,6 @@ public class EmbedDescription {
             }
         }
 
-        boolean isTruncated = false;
         while (this.getCurrentDescription().length() > maxEmbedStringLength) {
             if (this.changesList.size() > 5) {
                 // Dwindle the changes list down to 5 changes.
@@ -57,12 +56,12 @@ public class EmbedDescription {
                 this.artifactsList.add(artifactsURL);
             } else {
                 // Worst case scenario: truncate the description.
-                isTruncated = true;
-                break;
+                this.finalDescription = this.getCurrentDescription().substring(0, maxEmbedStringLength - 1);
+                return;
             }
         }
 
-        this.finalDescription = (isTruncated) ? this.getCurrentDescription().substring(0, maxEmbedStringLength - 1) : this.getCurrentDescription();
+        this.finalDescription = this.getCurrentDescription();
     }
 
     private String getCurrentDescription() {
