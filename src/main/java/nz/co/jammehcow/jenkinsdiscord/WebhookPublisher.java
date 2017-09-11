@@ -25,13 +25,24 @@ import org.kohsuke.stapler.QueryParameter;
 
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
+    private final boolean sendOnStateChange;
+    private final boolean enableUrlLinking;
+    private final boolean enableArtifactList;
     private static final String NAME = "Discord Notifier";
     private static final String VERSION = "1.0.0";
 
     @DataBoundConstructor
-    public WebhookPublisher(String webhookURL) { this.webhookURL = webhookURL; }
+    public WebhookPublisher(String webhookURL, boolean sendOnStateChange, boolean enableUrlLinking, boolean enableArtifactList) {
+        this.webhookURL = webhookURL;
+        this.sendOnStateChange = sendOnStateChange;
+        this.enableUrlLinking = enableUrlLinking;
+        this.enableArtifactList = enableArtifactList;
+    }
 
     public String getWebhookURL() { return this.webhookURL; }
+    public boolean getSendOnStateChange() { return this.sendOnStateChange; }
+    public boolean getEnableUrlLinking() { return this.enableUrlLinking; }
+    public boolean getEnableArtifactList() { return this.enableArtifactList; }
 
     @Override
     public boolean needsToRunAfterFinalized() { return true; }
