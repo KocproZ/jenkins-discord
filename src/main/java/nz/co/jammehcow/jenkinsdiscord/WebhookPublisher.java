@@ -53,7 +53,7 @@ public class WebhookPublisher extends Notifier {
         if (this.webhookURL.isEmpty()) {
             listener.getLogger().println("The Discord webhook is not set!");
             return true;
-        } else if (globalConfig.getUrl() == null || globalConfig.getUrl().isEmpty()) {
+        } else if (this.enableUrlLinking && (globalConfig.getUrl() == null || globalConfig.getUrl().isEmpty())) {
             listener.getLogger().println("Your Jenkins URL is not set (or is set to localhost)!");
             return true;
         }
