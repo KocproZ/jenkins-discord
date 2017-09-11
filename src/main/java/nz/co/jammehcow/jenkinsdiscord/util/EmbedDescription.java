@@ -38,6 +38,7 @@ public class EmbedDescription {
             }
         }
 
+        //noinspection unchecked
         List<Run.Artifact> artifacts = build.getArtifacts();
         if (artifacts.size() == 0) {
             this.artifactsList.add("\n*No artifacts to be found.*");
