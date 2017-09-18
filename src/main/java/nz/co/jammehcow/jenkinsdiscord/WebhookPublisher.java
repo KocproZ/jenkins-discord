@@ -92,8 +92,6 @@ public class WebhookPublisher extends Notifier {
 
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-
-
         public boolean isApplicable(Class<? extends AbstractProject> aClass) { return true; }
 
         public FormValidation doCheckWebhookURL(@QueryParameter String value) {
