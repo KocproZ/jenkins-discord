@@ -20,11 +20,11 @@ public class EmbedDescription {
     private String prefix;
     private String finalDescription;
 
-    public EmbedDescription(AbstractBuild build, JenkinsLocationConfiguration globalConfig, String prefix) {
+    public EmbedDescription(AbstractBuild build, JenkinsLocationConfiguration globalConfig, String prefix, boolean enableArtifactsList) {
         String artifactsURL = globalConfig.getUrl() + build.getUrl() + "artifact/";
         this.prefix = prefix;
         this.changesList.add("\n**Changes:**\n");
-        this.artifactsList.add("\n**Artifacts:**\n");
+        if (enableArtifactsList) this.artifactsList.add("\n**Artifacts:**\n");
         Object[] changes = build.getChangeSet().getItems();
 
         if (changes.length == 0) {
@@ -38,13 +38,15 @@ public class EmbedDescription {
             }
         }
 
-        //noinspection unchecked
-        List<Run.Artifact> artifacts = build.getArtifacts();
-        if (artifacts.size() == 0) {
-            this.artifactsList.add("\n*No artifacts to be found.*");
-        } else {
-            for (Run.Artifact artifact : artifacts) {
-                this.artifactsList.add(" - " + artifactsURL + artifact.getHref() + "\n");
+        if (enableArtifactsList) {
+            //noinspection unchecked
+            List<Run.Artifact> artifacts = build.getArtifacts();
+            if (artifacts.size() == 0) {
+                this.artifactsList.add("\n*No artifacts to be found.*");
+            } else {
+                for (Run.Artifact artifact : artifacts) {
+                    this.artifactsList.add(" - " + artifactsURL + artifact.getHref() + "\n");
+                }
             }
         }
 
