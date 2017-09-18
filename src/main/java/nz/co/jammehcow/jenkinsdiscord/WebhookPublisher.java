@@ -74,7 +74,7 @@ public class WebhookPublisher extends Notifier {
 
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
         wh.setStatus(buildStatus);
-        wh.setURL(globalConfig.getUrl() + build.getUrl());
+        if (this.enableUrlLinking) wh.setURL(globalConfig.getUrl() + build.getUrl());
         wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
 
         try { wh.send(); }
