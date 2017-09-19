@@ -70,7 +70,11 @@ public class WebhookPublisher extends Notifier {
         DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
         wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());
 
-        String descriptionPrefix = "**Build:**  #" + build.getId() + "\n**Status:**  " + (build.getResult().toString().toLowerCase());
+        String url = globalConfig.getUrl() + build.getUrl();
+        String descriptionPrefix = "**Build:** "
+                + getMarkdownHyperlink(build.getID(), url)
+                + "\n**Status:** "
+                + getMarkdownHyperlink(build.getResult().toString().toLowerCase(), url);
 
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
         wh.setStatus(buildStatus);
@@ -103,5 +107,9 @@ public class WebhookPublisher extends Notifier {
         public String getDisplayName() { return NAME; }
 
         public String getVersion() { return VERSION; }
+    }
+    
+    private String getMarkdownHyperlink(String content, String url) {
+        return "[" + content + "](" + url + ")";
     }
 }
