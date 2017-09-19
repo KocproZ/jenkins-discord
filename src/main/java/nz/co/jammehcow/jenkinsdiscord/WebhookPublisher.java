@@ -72,7 +72,7 @@ public class WebhookPublisher extends Notifier {
 
         String url = globalConfig.getUrl() + build.getUrl();
         String descriptionPrefix = "**Build:** "
-                + getMarkdownHyperlink(build.getID(), url)
+                + getMarkdownHyperlink(build.getId(), url)
                 + "\n**Status:** "
                 + getMarkdownHyperlink(build.getResult().toString().toLowerCase(), url);
 
