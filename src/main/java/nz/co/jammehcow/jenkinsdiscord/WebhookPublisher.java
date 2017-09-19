@@ -59,7 +59,7 @@ public class WebhookPublisher extends Notifier {
         }
 
         if (this.sendOnStateChange) {
-            if (!build.getResult().equals(build.getPreviousBuild().getResult())) {
+            if (build.getResult().equals(build.getPreviousBuild().getResult())) {
                 // Stops the webhook payload being created if the status is the same as the previous
                 return true;
             }
