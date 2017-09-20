@@ -41,9 +41,9 @@ public class WebhookPublisher extends Notifier {
     }
 
     public String getWebhookURL() { return this.webhookURL; }
-    public boolean getSendOnStateChange() { return this.sendOnStateChange; }
-    public boolean getEnableUrlLinking() { return this.enableUrlLinking; }
-    public boolean getEnableArtifactList() { return this.enableArtifactList; }
+    public boolean isSendOnStateChange() { return this.sendOnStateChange; }
+    public boolean isEnableUrlLinking() { return this.enableUrlLinking; }
+    public boolean isEnableArtifactList() { return this.enableArtifactList; }
 
     @Override
     public boolean needsToRunAfterFinalized() { return true; }
