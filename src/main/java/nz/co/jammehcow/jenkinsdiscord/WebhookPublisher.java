@@ -27,15 +27,17 @@ public class WebhookPublisher extends Notifier {
     private final boolean sendOnStateChange;
     private final boolean enableUrlLinking;
     private final boolean enableArtifactList;
+    private final boolean enableFooterInfo;
     private static final String NAME = "Discord Notifier";
     private static final String VERSION = "1.1.0";
 
     @DataBoundConstructor
-    public WebhookPublisher(String webhookURL, boolean sendOnStateChange, boolean enableUrlLinking, boolean enableArtifactList) {
+    public WebhookPublisher(String webhookURL, boolean sendOnStateChange, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
         this.webhookURL = webhookURL;
         this.sendOnStateChange = sendOnStateChange;
         this.enableUrlLinking = enableUrlLinking;
         this.enableArtifactList = enableArtifactList;
+        this.enableFooterInfo = enableFooterInfo;
     }
 
     public String getWebhookURL() { return this.webhookURL; }
@@ -79,7 +81,7 @@ public class WebhookPublisher extends Notifier {
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
         wh.setStatus(buildStatus);
         if (this.enableUrlLinking) wh.setURL(globalConfig.getUrl() + build.getUrl());
-        wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
+        if (this.enableFooterInfo) wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
 
         try { wh.send(); }
         catch (WebhookException e) { e.printStackTrace(); }
