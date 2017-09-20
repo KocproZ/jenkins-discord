@@ -25,7 +25,7 @@ import org.kohsuke.stapler.QueryParameter;
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
     private final boolean sendOnStateChange;
-    private final boolean enableUrlLinking;
+    private boolean enableUrlLinking;
     private final boolean enableArtifactList;
     private final boolean enableFooterInfo;
     private static final String NAME = "Discord Notifier";
@@ -50,14 +50,22 @@ public class WebhookPublisher extends Notifier {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+        // The global configuration, used to fetch the instance url
         JenkinsLocationConfiguration globalConfig = new JenkinsLocationConfiguration();
 
+        // Create a new webhook payload
+        DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
+
         if (this.webhookURL.isEmpty()) {
+            // Stop the plugin from continuing when the webhook URL isn't set. Shouldn't happen due to form validation
             listener.getLogger().println("The Discord webhook is not set!");
             return true;
-        } else if (this.enableUrlLinking && (globalConfig.getUrl() == null || globalConfig.getUrl().isEmpty())) {
-            listener.getLogger().println("Your Jenkins URL is not set (or is set to localhost)!");
-            return true;
+        }
+
+        if (this.enableUrlLinking && (globalConfig.getUrl() == null || globalConfig.getUrl().isEmpty())) {
+            // Disable linking when the instance URL isn't set
+            listener.getLogger().println("Your Jenkins URL is not set (or is set to localhost)! Disabling linking.");
+            this.enableUrlLinking = false;
         }
 
         if (this.sendOnStateChange) {
@@ -68,19 +76,28 @@ public class WebhookPublisher extends Notifier {
         }
 
         boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
-
-        DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
         wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());
 
-        String url = globalConfig.getUrl() + build.getUrl();
-        String descriptionPrefix = "**Build:** "
+        String descriptionPrefix;
+
+        // Adds links to the description and title if enableUrlLinking is enabled
+        if (this.enableUrlLinking) {
+            String url = globalConfig.getUrl() + build.getUrl();
+            descriptionPrefix = "**Build:** "
                 + getMarkdownHyperlink(build.getId(), url)
                 + "\n**Status:** "
                 + getMarkdownHyperlink(build.getResult().toString().toLowerCase(), url);
+            wh.setURL(url);
+        } else {
+            descriptionPrefix = "**Build:** "
+                    + build.getId()
+                    + "\n**Status:** "
+                    + build.getResult().toString().toLowerCase();
+        }
 
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
         wh.setStatus(buildStatus);
-        if (this.enableUrlLinking) wh.setURL(globalConfig.getUrl() + build.getUrl());
+
         if (this.enableFooterInfo) wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
 
         try { wh.send(); }
@@ -111,7 +128,7 @@ public class WebhookPublisher extends Notifier {
         public String getVersion() { return VERSION; }
     }
     
-    private String getMarkdownHyperlink(String content, String url) {
+    private static String getMarkdownHyperlink(String content, String url) {
         return "[" + content + "](" + url + ")";
     }
 }
