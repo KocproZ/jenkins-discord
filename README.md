@@ -40,3 +40,41 @@ There are a few options you can choose from:
 
 ![Standard options in the Discord Webhook config](https://github.com/jammehcow/jenkins-discord/blob/master/.github/usage_02.jpg)
 ![Advanced tab in the config](https://github.com/jammehcow/jenkins-discord/blob/master/.github/usage_03.jpg)
+
+### Pipeline
+
+#### Parameters
+
+##### Required
+
+- webhookURL
+	- The URL of the webhook (pretty self-explanatory) provided by Discord
+
+##### Optional
+
+The following parameters can be omitted
+
+- title
+	- Title of the message
+- link
+	- If set, the title becomes clickable to this URL
+- description
+	- Message text, can be markdown formatted, [Markdown Text 101 (Chat Formatting: Bold, Italic, Underline)](https://support.discordapp.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-)
+- footer
+	- Text in footer of the message
+- successful
+	- Color the message green for true, red for false
+
+#### Example
+
+````
+pipeline {
+  agent any
+
+  post {
+    always {
+      discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: 'Webhook URL'
+    }
+  }
+}
+````
