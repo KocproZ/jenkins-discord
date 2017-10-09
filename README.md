@@ -41,31 +41,26 @@ There are a few options you can choose from:
 ![Standard options in the Discord Webhook config](https://github.com/jammehcow/jenkins-discord/blob/master/.github/usage_02.jpg)
 ![Advanced tab in the config](https://github.com/jammehcow/jenkins-discord/blob/master/.github/usage_03.jpg)
 
-### Pipeline
+## Pipeline
 
-#### Parameters
+Discord Notifier supports Jenkins Pipeline. The only required parameter is webhookURL (the URL of the webhook, of course) - but there isn't much point of sending nothing.
 
-##### Required
+### Parameters
 
-- webhookURL
-	- The URL of the webhook (pretty self-explanatory) provided by Discord
-
-##### Optional
-
-The following parameters can be omitted
-
+- webhookURL (required)
+	- The URL of the webhook (pretty self-explanatory) provided by Discord.
 - title
-	- Title of the message
+	- The title of the embed.
 - link
-	- If set, the title becomes clickable to this URL
+	- If set, the title becomes a link to this URL.
 - description
-	- Message text, can be markdown formatted, [Markdown Text 101 (Chat Formatting: Bold, Italic, Underline)](https://support.discordapp.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-)
+	- The description of the message (the main chunk of text), can be markdown formatted, [Markdown Text 101 (Chat Formatting: Bold, Italic, Underline)](https://support.discordapp.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-).
 - footer
-	- Text in footer of the message
+	- The text in footer of the message.
 - successful
-	- Color the message green for true, red for false
+	- True makes the left-hand side of the embed green, false sets it to red.
 
-#### Example
+### Example
 
 ````
 pipeline {
