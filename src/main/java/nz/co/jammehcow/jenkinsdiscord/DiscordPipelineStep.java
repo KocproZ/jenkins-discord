@@ -95,7 +95,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             wh.setStatus(step.isSuccessful());
 
             try { wh.send(); }
-            catch (WebhookException e) { e.printStackTrace(); }
+            catch (WebhookException e) { e.printStackTrace(listener.getLogger()); }
 
             return null;
         }
