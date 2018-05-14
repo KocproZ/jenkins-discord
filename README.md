@@ -68,7 +68,7 @@ pipeline {
 
   post {
     always {
-      discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: 'Webhook URL'
+      discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: env.BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: 'Webhook URL'
     }
   }
 }
