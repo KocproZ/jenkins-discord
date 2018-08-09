@@ -31,6 +31,8 @@ There are a few options you can choose from:
  - Send only on state change
    - Checking this will only send the message when the state of the current build differs from the previous
  - Advanced:
+   - thumbnail
+     - If set, the image under the URL shows up on the right side of Discord message.
    - Enable URL linking
      - Enables the title, build summary and build id to be linked to the build. Requires the URL to be set in Jenkin's global configuration
    - Enable artifact list
@@ -53,6 +55,10 @@ Discord Notifier supports Jenkins Pipeline. The only required parameter is webho
 	- The title of the embed.
 - link
 	- If set, the title becomes a link to this URL.
+- thumbnail
+    - If set, the image under the URL shows up on the right side of Discord message.
+- image
+    - If set, the image under the URL shows up under discord message
 - description
 	- The description of the message (the main chunk of text), can be markdown formatted, [Markdown Text 101 (Chat Formatting: Bold, Italic, Underline)](https://support.discordapp.com/hc/en-us/articles/210298617-Markdown-Text-101-Chat-Formatting-Bold-Italic-Underline-).
 - footer
