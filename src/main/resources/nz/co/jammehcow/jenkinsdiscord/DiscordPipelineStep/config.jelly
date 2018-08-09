@@ -9,6 +9,12 @@
   <f:entry title="Link" field="link">
     <f:textbox />
   </f:entry>
+  <f:entry title="Thumbnail" field="thumbnail">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="Image" field="image">
+    <f:textbox />
+  </f:entry>
   <f:entry title="Description" field="description">
     <f:textbox />
   </f:entry>
