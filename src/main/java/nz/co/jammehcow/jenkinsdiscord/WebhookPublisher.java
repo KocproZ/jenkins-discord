@@ -24,6 +24,7 @@ import org.kohsuke.stapler.QueryParameter;
 
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
+    private final String thumbnailURL;
     private final boolean sendOnStateChange;
     private boolean enableUrlLinking;
     private final boolean enableArtifactList;
@@ -32,8 +33,9 @@ public class WebhookPublisher extends Notifier {
     private static final String VERSION = "1.2.1";
 
     @DataBoundConstructor
-    public WebhookPublisher(String webhookURL, boolean sendOnStateChange, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
+    public WebhookPublisher(String webhookURL, String thumbnailURL, boolean sendOnStateChange, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
         this.webhookURL = webhookURL;
+        this.thumbnailURL = thumbnailURL;
         this.sendOnStateChange = sendOnStateChange;
         this.enableUrlLinking = enableUrlLinking;
         this.enableArtifactList = enableArtifactList;
@@ -96,6 +98,7 @@ public class WebhookPublisher extends Notifier {
                     + build.getResult().toString().toLowerCase();
         }
 
+        wh.setThumbnail(thumbnailURL);
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
         wh.setStatus(buildStatus);
 
