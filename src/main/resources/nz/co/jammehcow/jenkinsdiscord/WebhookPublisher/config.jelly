@@ -7,8 +7,14 @@
     <f:checkbox />
   </f:entry>
   <f:advanced>
+    <f:entry title="Title" field="statusTitle">
+      <f:textbox />
+    </f:entry>
+    <f:entry title="Branch name" field="branchName">
+      <f:textbox />
+    </f:entry>
     <f:entry title="Thumbnail URL" field="thumbnailURL">
-        <f:textbox />
+            <f:textbox />
     </f:entry>
     <f:entry title="Enable URL linking" field="enableUrlLinking">
       <f:checkbox />

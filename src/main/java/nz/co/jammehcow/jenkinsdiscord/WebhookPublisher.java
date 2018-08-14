@@ -1,5 +1,6 @@
 package nz.co.jammehcow.jenkinsdiscord;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -14,6 +15,9 @@ import hudson.util.FormValidation;
 import jenkins.model.JenkinsLocationConfiguration;
 import nz.co.jammehcow.jenkinsdiscord.exception.WebhookException;
 import nz.co.jammehcow.jenkinsdiscord.util.EmbedDescription;
+
+import java.io.IOException;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -24,25 +28,31 @@ import org.kohsuke.stapler.QueryParameter;
 
 public class WebhookPublisher extends Notifier {
     private final String webhookURL;
+    private final String branchName;
+    private final String statusTitle;
     private final String thumbnailURL;
     private final boolean sendOnStateChange;
     private boolean enableUrlLinking;
     private final boolean enableArtifactList;
     private final boolean enableFooterInfo;
     private static final String NAME = "Discord Notifier";
-    private static final String VERSION = "1.2.1";
+    private static final String VERSION = "1.1.1";
 
     @DataBoundConstructor
-    public WebhookPublisher(String webhookURL, String thumbnailURL, boolean sendOnStateChange, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
+    public WebhookPublisher(String webhookURL, String thumbnailURL, boolean sendOnStateChange, String statusTitle, String branchName, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
         this.webhookURL = webhookURL;
         this.thumbnailURL = thumbnailURL;
         this.sendOnStateChange = sendOnStateChange;
         this.enableUrlLinking = enableUrlLinking;
         this.enableArtifactList = enableArtifactList;
         this.enableFooterInfo = enableFooterInfo;
+        this.branchName = branchName;
+        this.statusTitle = statusTitle;
     }
 
     public String getWebhookURL() { return this.webhookURL; }
+    public String getBranchName() { return this.branchName; }
+    public String getStatusTitle() { return this.statusTitle; }
     public boolean isSendOnStateChange() { return this.sendOnStateChange; }
     public boolean isEnableUrlLinking() { return this.enableUrlLinking; }
     public boolean isEnableArtifactList() { return this.enableArtifactList; }
@@ -52,12 +62,13 @@ public class WebhookPublisher extends Notifier {
     public boolean needsToRunAfterFinalized() { return true; }
 
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        // The global configuration, used to fetch the instance url
+    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+    	final EnvVars env = build.getEnvironment(listener);
+    	// The global configuration, used to fetch the instance url
         JenkinsLocationConfiguration globalConfig = new JenkinsLocationConfiguration();
 
         // Create a new webhook payload
-        DiscordWebhook wh = new DiscordWebhook(this.webhookURL);
+        DiscordWebhook wh = new DiscordWebhook(env.expand(this.webhookURL));
 
         if (this.webhookURL.isEmpty()) {
             // Stop the plugin from continuing when the webhook URL isn't set. Shouldn't happen due to form validation
@@ -79,20 +90,33 @@ public class WebhookPublisher extends Notifier {
         }
 
         boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
-        wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());
+
+        if (!this.statusTitle.isEmpty()) {
+            wh.setTitle(env.expand(this.statusTitle));
+        } else {
+            wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());
+        }
+
 
         String descriptionPrefix;
+
+        String branchNameString ="";
+        if (!branchName.isEmpty()) {
+            branchNameString = "**Branch:** "+env.expand(branchName)+"\n";
+        }
 
         // Adds links to the description and title if enableUrlLinking is enabled
         if (this.enableUrlLinking) {
             String url = globalConfig.getUrl() + build.getUrl();
-            descriptionPrefix = "**Build:** "
+            descriptionPrefix = branchNameString
+            	+"**Build:** "
                 + getMarkdownHyperlink(build.getId(), url)
                 + "\n**Status:** "
                 + getMarkdownHyperlink(build.getResult().toString().toLowerCase(), url);
             wh.setURL(url);
         } else {
-            descriptionPrefix = "**Build:** "
+            descriptionPrefix = branchNameString
+            	    + "**Build:** "
                     + build.getId()
                     + "\n**Status:** "
                     + build.getResult().toString().toLowerCase();
