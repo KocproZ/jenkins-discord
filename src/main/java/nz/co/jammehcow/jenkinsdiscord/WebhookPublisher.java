@@ -30,6 +30,7 @@ public class WebhookPublisher extends Notifier {
     private final String webhookURL;
     private final String branchName;
     private final String statusTitle;
+    private final String thumbnailURL;
     private final boolean sendOnStateChange;
     private boolean enableUrlLinking;
     private final boolean enableArtifactList;
@@ -38,8 +39,9 @@ public class WebhookPublisher extends Notifier {
     private static final String VERSION = "1.1.1";
 
     @DataBoundConstructor
-    public WebhookPublisher(String webhookURL, boolean sendOnStateChange, String statusTitle, String branchName, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
+    public WebhookPublisher(String webhookURL, String thumbnailURL, boolean sendOnStateChange, String statusTitle, String branchName, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
         this.webhookURL = webhookURL;
+        this.thumbnailURL = thumbnailURL;
         this.sendOnStateChange = sendOnStateChange;
         this.enableUrlLinking = enableUrlLinking;
         this.enableArtifactList = enableArtifactList;
@@ -88,13 +90,13 @@ public class WebhookPublisher extends Notifier {
         }
 
         boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
-        
+
         if (!this.statusTitle.isEmpty()) {
             wh.setTitle(env.expand(this.statusTitle));
         } else {
-            wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());	
+            wh.setTitle(build.getProject().getDisplayName() + " #" + build.getId());
         }
-        
+
 
         String descriptionPrefix;
 
@@ -102,7 +104,7 @@ public class WebhookPublisher extends Notifier {
         if (!branchName.isEmpty()) {
             branchNameString = "**Branch:** "+env.expand(branchName)+"\n";
         }
-        
+
         // Adds links to the description and title if enableUrlLinking is enabled
         if (this.enableUrlLinking) {
             String url = globalConfig.getUrl() + build.getUrl();
@@ -120,6 +122,7 @@ public class WebhookPublisher extends Notifier {
                     + build.getResult().toString().toLowerCase();
         }
 
+        wh.setThumbnail(thumbnailURL);
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
         wh.setStatus(buildStatus);
 

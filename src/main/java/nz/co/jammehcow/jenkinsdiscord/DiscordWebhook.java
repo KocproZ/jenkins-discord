@@ -101,6 +101,30 @@ class DiscordWebhook {
     }
 
     /**
+     * Sets the URL of image at the bottom of embed.
+     * @param url URL of image
+     * @return this
+     */
+    public DiscordWebhook setImage(String url) {
+        JSONObject image = new JSONObject();
+        image.put("url", url);
+        this.embed.put("image", image);
+        return this;
+    }
+
+    /**
+     * Sets the URL of image on the right side.
+     * @param url URL of image
+     * @return this
+     */
+    public DiscordWebhook setThumbnail(String url) {
+        JSONObject thumbnail = new JSONObject();
+        thumbnail.put("url", url);
+        this.embed.put("thumbnail", thumbnail);
+        return this;
+    }
+
+    /**
      * Sets the embed's footer text.
      *
      * @param text the footer text

@@ -20,6 +20,8 @@ public class DiscordPipelineStep extends AbstractStepImpl {
     private String link;
     private String description;
     private String footer;
+    private String image;
+    private String thumbnail;
     private boolean successful;
 
     @DataBoundConstructor
@@ -76,6 +78,24 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         this.successful = successful;
     }
 
+    @DataBoundSetter
+    public void setImage(String url) {
+        this.image = url;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    @DataBoundSetter
+    public void setThumbnail(String url) {
+        this.thumbnail = url;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
     public static class DiscordPipelineStepExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
         @Inject
         transient DiscordPipelineStep step;
@@ -90,7 +110,9 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
             wh.setTitle(step.getTitle());
             wh.setURL(step.getLink());
+            wh.setThumbnail(step.getThumbnail());
             wh.setDescription(step.getDescription());
+            wh.setImage(step.getImage());
             wh.setFooter(step.getFooter());
             wh.setStatus(step.isSuccessful());
 

@@ -13,6 +13,9 @@
     <f:entry title="Branch name" field="branchName">
       <f:textbox />
     </f:entry>
+    <f:entry title="Thumbnail URL" field="thumbnailURL">
+            <f:textbox />
+    </f:entry>
     <f:entry title="Enable URL linking" field="enableUrlLinking">
       <f:checkbox />
     </f:entry>
