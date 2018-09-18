@@ -12,7 +12,7 @@
 
   <name>Discord Notifier</name>
   <description>Discord Notifier allows you to send Discord embeds about your builds via Discord's webhook functionality.</description>
-  <url>https://ci.jammehcow.co.nz/job/Discord%20Notifier/</url>
+  <url>https://jenkins.b.snet.ovh/job/Discord-notifier/</url>
 
   <groupId>nz.co.jammehcow</groupId>
   <artifactId>jenkins-discord</artifactId>
