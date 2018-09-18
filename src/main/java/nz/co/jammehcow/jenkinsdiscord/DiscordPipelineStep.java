@@ -23,6 +23,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
     private String image;
     private String thumbnail;
     private boolean successful;
+    private boolean unstable; //Backwards compatibility
 
     @DataBoundConstructor
     public DiscordPipelineStep(String webhookURL) {
@@ -78,6 +79,15 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         this.successful = successful;
     }
 
+    public boolean isUnstable() {
+        return unstable;
+    }
+
+    @DataBoundSetter
+    public void setUnstable(boolean unstable) {
+        this.unstable = unstable;
+    }
+
     @DataBoundSetter
     public void setImage(String url) {
         this.image = url;
@@ -107,6 +117,11 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         protected Void run() throws Exception {
             listener.getLogger().println("Sending notification to Discord.");
 
+            DiscordWebhook.StatusColor statusColor = DiscordWebhook.StatusColor.YELLOW;
+            if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
+            if (!step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
+            if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
+
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
             wh.setTitle(step.getTitle());
             wh.setURL(step.getLink());
@@ -114,7 +129,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             wh.setDescription(step.getDescription());
             wh.setImage(step.getImage());
             wh.setFooter(step.getFooter());
-            wh.setStatus(step.isSuccessful());
+            wh.setStatus(statusColor);
 
             try { wh.send(); }
             catch (WebhookException e) { e.printStackTrace(listener.getLogger()); }

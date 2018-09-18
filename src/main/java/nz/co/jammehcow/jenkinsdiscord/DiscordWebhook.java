@@ -1,6 +1,5 @@
 package nz.co.jammehcow.jenkinsdiscord;
 
-import com.google.common.primitives.UnsignedInteger;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -19,17 +18,25 @@ class DiscordWebhook {
     private JSONObject obj;
     private JSONObject embed;
 
-    private enum Color {
+    enum StatusColor {
         /**
          * Green "you're sweet as" color.
          */
-        GREEN(1681177), /**
+        GREEN(1681177),
+        /**
+         * Yellow "go, but I'm watching you" color.
+         */
+        YELLOW(16776970),
+        /**
          * Red "something ain't right" color.
          */
         RED(11278871);
 
-        private UnsignedInteger code;
-        Color(int code) { this.code = UnsignedInteger.asUnsigned(code); }
+        private long code;
+
+        StatusColor(int code) {
+            this.code = code;
+        }
     }
 
     /**
@@ -37,7 +44,7 @@ class DiscordWebhook {
      *
      * @param url the webhook URL
      */
-    public DiscordWebhook(String url) {
+    DiscordWebhook(String url) {
         this.webhookUrl = url;
         this.obj = new JSONObject();
         this.obj.put("username", "Jenkins");
@@ -59,7 +66,7 @@ class DiscordWebhook {
     /**
      * Sets the branch name.
      *
-     * @param name the branch name
+     * @param branchName the branch name
      * @return this
      */
     public DiscordWebhook setBranchName(String branchName) {
@@ -84,8 +91,8 @@ class DiscordWebhook {
      * @param isSuccess if the build is successful
      * @return this
      */
-    public DiscordWebhook setStatus(boolean isSuccess) {
-        this.embed.put("color", (isSuccess) ? Color.GREEN.code : Color.RED.code);
+    public DiscordWebhook setStatus(StatusColor isSuccess) {
+        this.embed.put("color", isSuccess.code);
         return this;
     }
 

@@ -15,11 +15,10 @@ import hudson.util.FormValidation;
 import jenkins.model.JenkinsLocationConfiguration;
 import nz.co.jammehcow.jenkinsdiscord.exception.WebhookException;
 import nz.co.jammehcow.jenkinsdiscord.util.EmbedDescription;
-
-import java.io.IOException;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+
+import java.io.IOException;
 
 /**
  * Author: jammehcow.
@@ -89,7 +88,12 @@ public class WebhookPublisher extends Notifier {
             }
         }
 
-        boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
+        DiscordWebhook.StatusColor statusColor = DiscordWebhook.StatusColor.GREEN;
+        Result buildresult = build.getResult();
+        if (!buildresult.isCompleteBuild()) return true;
+        if (buildresult.isBetterOrEqualTo(Result.SUCCESS)) statusColor = DiscordWebhook.StatusColor.GREEN;
+        if (buildresult.isWorseThan(Result.SUCCESS)) statusColor = DiscordWebhook.StatusColor.YELLOW;
+        if (buildresult.isWorseThan(Result.UNSTABLE)) statusColor = DiscordWebhook.StatusColor.RED;
 
         if (!this.statusTitle.isEmpty()) {
             wh.setTitle(env.expand(this.statusTitle));
@@ -124,7 +128,7 @@ public class WebhookPublisher extends Notifier {
 
         wh.setThumbnail(thumbnailURL);
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
-        wh.setStatus(buildStatus);
+        wh.setStatus(statusColor);
 
         if (this.enableFooterInfo) wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
 
