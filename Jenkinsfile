@@ -1,5 +1,6 @@
 node {
     stage('Prepare') {
+        properties([pipelineTriggers([githubPush()])])
         checkout scm
         sh 'mvn clean'
     }
