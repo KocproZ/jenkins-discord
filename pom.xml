@@ -38,6 +38,11 @@
       <name>James Upjohn</name>
       <email>jspartan250@gmail.com</email>
     </developer>
+    <developer>
+      <id>KocproZ</id>
+      <name>Kacper Stasiuk</name>
+      <email>kocproz@protonmail.com</email>
+    </developer>
   </developers>
 
   <repositories>
