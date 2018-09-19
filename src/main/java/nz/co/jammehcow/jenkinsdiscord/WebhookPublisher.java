@@ -15,11 +15,10 @@ import hudson.util.FormValidation;
 import jenkins.model.JenkinsLocationConfiguration;
 import nz.co.jammehcow.jenkinsdiscord.exception.WebhookException;
 import nz.co.jammehcow.jenkinsdiscord.util.EmbedDescription;
-
-import java.io.IOException;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+
+import java.io.IOException;
 
 /**
  * Author: jammehcow.
@@ -53,6 +52,10 @@ public class WebhookPublisher extends Notifier {
     public String getWebhookURL() { return this.webhookURL; }
     public String getBranchName() { return this.branchName; }
     public String getStatusTitle() { return this.statusTitle; }
+
+    public String getThumbnailURL() {
+        return this.thumbnailURL;
+    }
     public boolean isSendOnStateChange() { return this.sendOnStateChange; }
     public boolean isEnableUrlLinking() { return this.enableUrlLinking; }
     public boolean isEnableArtifactList() { return this.enableArtifactList; }
