@@ -68,17 +68,6 @@ class DiscordWebhook {
     }
 
     /**
-     * Sets the branch name.
-     *
-     * @param branchName the branch name
-     * @return this
-     */
-    public DiscordWebhook setBranchName(String branchName) {
-        this.embed.put("branchName", branchName);
-        return this;
-    }
-    
-    /**
      * Sets the embed title url.
      *
      * @param buildUrl the build url

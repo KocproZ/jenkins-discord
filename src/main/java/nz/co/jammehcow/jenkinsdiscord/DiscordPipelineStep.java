@@ -121,7 +121,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
 
             DiscordWebhook.StatusColor statusColor = DiscordWebhook.StatusColor.YELLOW;
             if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
-            if (!step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
+            if (step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
             if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
 
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
