@@ -18,6 +18,10 @@ class DiscordWebhook {
     private JSONObject obj;
     private JSONObject embed;
 
+    public static final int TITLE_LIMIT = 256;
+    public static final int DESCRIPTION_LIMIT = 2048;
+    public static final int FOOTER_LIMIT = 2048;
+
     enum StatusColor {
         /**
          * Green "you're sweet as" color.
@@ -148,6 +152,9 @@ class DiscordWebhook {
      * @throws WebhookException the webhook exception
      */
     public void send() throws WebhookException {
+        if (this.embed.toString().length() > 6000)
+            throw new WebhookException("Embed object larger than the limit (" + this.embed.toString().length() + ">6000).");
+
         this.obj.put("embeds", new JSONArray().put(this.embed));
 
         try {

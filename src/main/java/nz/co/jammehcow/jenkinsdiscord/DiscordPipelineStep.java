@@ -13,6 +13,8 @@ import org.kohsuke.stapler.DataBoundSetter;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static nz.co.jammehcow.jenkinsdiscord.DiscordWebhook.*;
+
 public class DiscordPipelineStep extends AbstractStepImpl {
     private final String webhookURL;
 
@@ -123,18 +125,29 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
 
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
-            wh.setTitle(step.getTitle());
+            wh.setTitle(checkLimitAndTruncate("title", step.getTitle(), TITLE_LIMIT));
             wh.setURL(step.getLink());
             wh.setThumbnail(step.getThumbnail());
-            wh.setDescription(step.getDescription());
+            wh.setDescription(checkLimitAndTruncate("description", step.getDescription(), DESCRIPTION_LIMIT));
             wh.setImage(step.getImage());
-            wh.setFooter(step.getFooter());
+            wh.setFooter(checkLimitAndTruncate("footer", step.getFooter(), FOOTER_LIMIT));
             wh.setStatus(statusColor);
 
             try { wh.send(); }
             catch (WebhookException e) { e.printStackTrace(listener.getLogger()); }
 
             return null;
+        }
+
+        private String checkLimitAndTruncate(String fieldName, String value, int limit) {
+            if (value.length() > limit) {
+                listener.getLogger().printf("Warning: '%s' field has more than %d characters (%d). It will be truncated.\n",
+                        fieldName,
+                        limit,
+                        value.length());
+                return value.substring(0, 2048);
+            }
+            return value;
         }
 
         private static final long serialVersionUID = 1L;
