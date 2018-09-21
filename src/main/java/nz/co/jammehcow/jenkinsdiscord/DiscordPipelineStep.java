@@ -141,11 +141,11 @@ public class DiscordPipelineStep extends AbstractStepImpl {
 
         private String checkLimitAndTruncate(String fieldName, String value, int limit) {
             if (value.length() > limit) {
-                listener.getLogger().printf("Warning: '%s' field has more than %d characters (%d). It will be truncated.\n",
+                listener.getLogger().printf("Warning: '%s' field has more than %d characters (%d). It will be truncated.%n",
                         fieldName,
                         limit,
                         value.length());
-                return value.substring(0, 2048);
+                return value.substring(0, limit);
             }
             return value;
         }

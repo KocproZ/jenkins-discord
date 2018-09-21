@@ -18,9 +18,9 @@ class DiscordWebhook {
     private JSONObject obj;
     private JSONObject embed;
 
-    public static final int TITLE_LIMIT = 256;
-    public static final int DESCRIPTION_LIMIT = 2048;
-    public static final int FOOTER_LIMIT = 2048;
+    static final int TITLE_LIMIT = 256;
+    static final int DESCRIPTION_LIMIT = 2048;
+    static final int FOOTER_LIMIT = 2048;
 
     enum StatusColor {
         /**
