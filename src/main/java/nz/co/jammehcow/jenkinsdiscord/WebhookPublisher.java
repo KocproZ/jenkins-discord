@@ -64,7 +64,7 @@ public class WebhookPublisher extends Notifier {
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
     	final EnvVars env = build.getEnvironment(listener);
     	// The global configuration, used to fetch the instance url
-        JenkinsLocationConfiguration globalConfig = new JenkinsLocationConfiguration();
+        JenkinsLocationConfiguration globalConfig = JenkinsLocationConfiguration.get();
 
         // Create a new webhook payload
         DiscordWebhook wh = new DiscordWebhook(env.expand(this.webhookURL));
