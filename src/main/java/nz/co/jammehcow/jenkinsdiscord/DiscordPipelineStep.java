@@ -13,6 +13,8 @@ import org.kohsuke.stapler.DataBoundSetter;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import static nz.co.jammehcow.jenkinsdiscord.DiscordWebhook.*;
+
 public class DiscordPipelineStep extends AbstractStepImpl {
     private final String webhookURL;
 
@@ -23,6 +25,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
     private String image;
     private String thumbnail;
     private boolean successful;
+    private boolean unstable; //Backwards compatibility
 
     @DataBoundConstructor
     public DiscordPipelineStep(String webhookURL) {
@@ -78,6 +81,15 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         this.successful = successful;
     }
 
+    public boolean isUnstable() {
+        return unstable;
+    }
+
+    @DataBoundSetter
+    public void setUnstable(boolean unstable) {
+        this.unstable = unstable;
+    }
+
     @DataBoundSetter
     public void setImage(String url) {
         this.image = url;
@@ -107,19 +119,35 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         protected Void run() throws Exception {
             listener.getLogger().println("Sending notification to Discord.");
 
+            DiscordWebhook.StatusColor statusColor = DiscordWebhook.StatusColor.YELLOW;
+            if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
+            if (step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
+            if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
+
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
-            wh.setTitle(step.getTitle());
+            wh.setTitle(checkLimitAndTruncate("title", step.getTitle(), TITLE_LIMIT));
             wh.setURL(step.getLink());
             wh.setThumbnail(step.getThumbnail());
-            wh.setDescription(step.getDescription());
+            wh.setDescription(checkLimitAndTruncate("description", step.getDescription(), DESCRIPTION_LIMIT));
             wh.setImage(step.getImage());
-            wh.setFooter(step.getFooter());
-            wh.setStatus(step.isSuccessful());
+            wh.setFooter(checkLimitAndTruncate("footer", step.getFooter(), FOOTER_LIMIT));
+            wh.setStatus(statusColor);
 
             try { wh.send(); }
             catch (WebhookException e) { e.printStackTrace(listener.getLogger()); }
 
             return null;
+        }
+
+        private String checkLimitAndTruncate(String fieldName, String value, int limit) {
+            if (value.length() > limit) {
+                listener.getLogger().printf("Warning: '%s' field has more than %d characters (%d). It will be truncated.%n",
+                        fieldName,
+                        limit,
+                        value.length());
+                return value.substring(0, limit);
+            }
+            return value;
         }
 
         private static final long serialVersionUID = 1L;

@@ -68,7 +68,7 @@ public class WebhookPublisher extends Notifier {
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
     	final EnvVars env = build.getEnvironment(listener);
     	// The global configuration, used to fetch the instance url
-        JenkinsLocationConfiguration globalConfig = new JenkinsLocationConfiguration();
+        JenkinsLocationConfiguration globalConfig = JenkinsLocationConfiguration.get();
 
         // Create a new webhook payload
         DiscordWebhook wh = new DiscordWebhook(env.expand(this.webhookURL));
@@ -92,7 +92,12 @@ public class WebhookPublisher extends Notifier {
             }
         }
 
-        boolean buildStatus = build.getResult().isBetterOrEqualTo(Result.SUCCESS);
+        DiscordWebhook.StatusColor statusColor = DiscordWebhook.StatusColor.GREEN;
+        Result buildresult = build.getResult();
+        if (!buildresult.isCompleteBuild()) return true;
+        if (buildresult.isBetterOrEqualTo(Result.SUCCESS)) statusColor = DiscordWebhook.StatusColor.GREEN;
+        if (buildresult.isWorseThan(Result.SUCCESS)) statusColor = DiscordWebhook.StatusColor.YELLOW;
+        if (buildresult.isWorseThan(Result.UNSTABLE)) statusColor = DiscordWebhook.StatusColor.RED;
 
         if (!this.statusTitle.isEmpty()) {
             wh.setTitle(env.expand(this.statusTitle));
@@ -127,7 +132,7 @@ public class WebhookPublisher extends Notifier {
 
         wh.setThumbnail(thumbnailURL);
         wh.setDescription(new EmbedDescription(build, globalConfig, descriptionPrefix, this.enableArtifactList).toString());
-        wh.setStatus(buildStatus);
+        wh.setStatus(statusColor);
 
         if (this.enableFooterInfo) wh.setFooter("Jenkins v" + build.getHudsonVersion() + ", " + getDescriptor().getDisplayName() + " v" + getDescriptor().getVersion());
 

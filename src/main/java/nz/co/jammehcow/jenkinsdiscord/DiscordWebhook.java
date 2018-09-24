@@ -1,6 +1,5 @@
 package nz.co.jammehcow.jenkinsdiscord;
 
-import com.google.common.primitives.UnsignedInteger;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -19,17 +18,29 @@ class DiscordWebhook {
     private JSONObject obj;
     private JSONObject embed;
 
-    private enum Color {
+    static final int TITLE_LIMIT = 256;
+    static final int DESCRIPTION_LIMIT = 2048;
+    static final int FOOTER_LIMIT = 2048;
+
+    enum StatusColor {
         /**
          * Green "you're sweet as" color.
          */
-        GREEN(1681177), /**
+        GREEN(1681177),
+        /**
+         * Yellow "go, but I'm watching you" color.
+         */
+        YELLOW(16776970),
+        /**
          * Red "something ain't right" color.
          */
         RED(11278871);
 
-        private UnsignedInteger code;
-        Color(int code) { this.code = UnsignedInteger.asUnsigned(code); }
+        private long code;
+
+        StatusColor(int code) {
+            this.code = code;
+        }
     }
 
     /**
@@ -37,7 +48,7 @@ class DiscordWebhook {
      *
      * @param url the webhook URL
      */
-    public DiscordWebhook(String url) {
+    DiscordWebhook(String url) {
         this.webhookUrl = url;
         this.obj = new JSONObject();
         this.obj.put("username", "Jenkins");
@@ -57,17 +68,6 @@ class DiscordWebhook {
     }
 
     /**
-     * Sets the branch name.
-     *
-     * @param name the branch name
-     * @return this
-     */
-    public DiscordWebhook setBranchName(String branchName) {
-        this.embed.put("branchName", branchName);
-        return this;
-    }
-    
-    /**
      * Sets the embed title url.
      *
      * @param buildUrl the build url
@@ -84,8 +84,8 @@ class DiscordWebhook {
      * @param isSuccess if the build is successful
      * @return this
      */
-    public DiscordWebhook setStatus(boolean isSuccess) {
-        this.embed.put("color", (isSuccess) ? Color.GREEN.code : Color.RED.code);
+    public DiscordWebhook setStatus(StatusColor isSuccess) {
+        this.embed.put("color", isSuccess.code);
         return this;
     }
 
@@ -141,6 +141,9 @@ class DiscordWebhook {
      * @throws WebhookException the webhook exception
      */
     public void send() throws WebhookException {
+        if (this.embed.toString().length() > 6000)
+            throw new WebhookException("Embed object larger than the limit (" + this.embed.toString().length() + ">6000).");
+
         this.obj.put("embeds", new JSONArray().put(this.embed));
 
         try {
