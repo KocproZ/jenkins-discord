@@ -1,6 +1,7 @@
 package nz.co.jammehcow.jenkinsdiscord;
 
 import hudson.Extension;
+import hudson.model.Result;
 import hudson.model.TaskListener;
 import nz.co.jammehcow.jenkinsdiscord.exception.WebhookException;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
@@ -24,6 +25,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
     private String footer;
     private String image;
     private String thumbnail;
+    private String result;
     private boolean successful;
     private boolean unstable; //Backwards compatibility
 
@@ -108,6 +110,15 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         return thumbnail;
     }
 
+    @DataBoundSetter
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
     public static class DiscordPipelineStepExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
         @Inject
         transient DiscordPipelineStep step;
@@ -119,10 +130,21 @@ public class DiscordPipelineStep extends AbstractStepImpl {
         protected Void run() throws Exception {
             listener.getLogger().println("Sending notification to Discord.");
 
-            DiscordWebhook.StatusColor statusColor = DiscordWebhook.StatusColor.YELLOW;
-            if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
-            if (step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
-            if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
+            DiscordWebhook.StatusColor statusColor;
+            if (step.getResult().equals(Result.SUCCESS.toString())) {
+                statusColor = StatusColor.GREEN;
+            } else if (step.getResult().equals(Result.UNSTABLE.toString())) {
+                statusColor = StatusColor.YELLOW;
+            } else if (step.getResult().equals(Result.FAILURE.toString())) {
+                statusColor = StatusColor.RED;
+            } else if (step.getResult().equals(Result.ABORTED.toString())) {
+                statusColor = StatusColor.GREY;
+            } else {
+                statusColor = StatusColor.YELLOW;
+                if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
+                if (step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
+                if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
+            }
 
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
             wh.setTitle(checkLimitAndTruncate("title", step.getTitle(), TITLE_LIMIT));

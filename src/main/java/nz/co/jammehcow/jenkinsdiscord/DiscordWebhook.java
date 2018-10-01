@@ -34,8 +34,11 @@ class DiscordWebhook {
         /**
          * Red "something ain't right" color.
          */
-        RED(11278871);
-
+        RED(11278871),
+        /**
+         * Grey. Just grey.
+         */
+        GREY(13487565);
         private long code;
 
         StatusColor(int code) {
