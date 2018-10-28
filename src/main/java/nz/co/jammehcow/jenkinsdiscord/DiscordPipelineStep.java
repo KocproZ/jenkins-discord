@@ -131,6 +131,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             listener.getLogger().println("Sending notification to Discord.");
 
             DiscordWebhook.StatusColor statusColor;
+            if (step.getResult() == null) throw new IllegalArgumentException("Result value not set");
             if (step.getResult().equals(Result.SUCCESS.toString())) {
                 statusColor = StatusColor.GREEN;
             } else if (step.getResult().equals(Result.UNSTABLE.toString())) {
