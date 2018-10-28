@@ -65,8 +65,6 @@ Discord Notifier supports Jenkins Pipeline. The only required parameter is webho
 	- The text in footer of the message.
 - successful
 	- True makes the left-hand side of the embed green, false sets it to red.
-- unstable
-    - True makes the left-hand side of the embed green (Only when successful: true).
 
 ### Example
 
@@ -76,7 +74,7 @@ pipeline {
 
   post {
     always {
-      discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: env.BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), unstable: false, title: JOB_NAME, webhookURL: 'Webhook URL'
+      discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: env.BUILD_URL, result: currentBuild.currentResult, unstable: false, title: JOB_NAME, webhookURL: 'Webhook URL'
     }
   }
 }

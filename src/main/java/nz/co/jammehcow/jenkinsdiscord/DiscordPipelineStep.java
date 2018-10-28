@@ -27,7 +27,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
     private String thumbnail;
     private String result;
     private boolean successful;
-    private boolean unstable; //Backwards compatibility
+    private boolean unstable;
 
     @DataBoundConstructor
     public DiscordPipelineStep(String webhookURL) {
