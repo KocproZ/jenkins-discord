@@ -131,8 +131,12 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             listener.getLogger().println("Sending notification to Discord.");
 
             DiscordWebhook.StatusColor statusColor;
-            if (step.getResult() == null) throw new IllegalArgumentException("Result value not set");
-            if (step.getResult().equals(Result.SUCCESS.toString())) {
+            statusColor = StatusColor.YELLOW;
+            if (step.getResult() == null) {
+                if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
+                if (step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
+                if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
+            } else if (step.getResult().equals(Result.SUCCESS.toString())) {
                 statusColor = StatusColor.GREEN;
             } else if (step.getResult().equals(Result.UNSTABLE.toString())) {
                 statusColor = StatusColor.YELLOW;
@@ -141,10 +145,7 @@ public class DiscordPipelineStep extends AbstractStepImpl {
             } else if (step.getResult().equals(Result.ABORTED.toString())) {
                 statusColor = StatusColor.GREY;
             } else {
-                statusColor = StatusColor.YELLOW;
-                if (step.isSuccessful()) statusColor = DiscordWebhook.StatusColor.GREEN;
-                if (step.isSuccessful() && step.isUnstable()) statusColor = DiscordWebhook.StatusColor.YELLOW;
-                if (!step.isSuccessful() && !step.isUnstable()) statusColor = DiscordWebhook.StatusColor.RED;
+                listener.getLogger().println(step.getResult() + " is not a valid result");
             }
 
             DiscordWebhook wh = new DiscordWebhook(step.getWebhookURL());
