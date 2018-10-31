@@ -35,7 +35,7 @@ public class WebhookPublisher extends Notifier {
     private final boolean enableArtifactList;
     private final boolean enableFooterInfo;
     private static final String NAME = "Discord Notifier";
-    private static final String VERSION = "1.4.0";
+    private static final String VERSION = "1.4.1";
 
     @DataBoundConstructor
     public WebhookPublisher(String webhookURL, String thumbnailURL, boolean sendOnStateChange, String statusTitle, String branchName, boolean enableUrlLinking, boolean enableArtifactList, boolean enableFooterInfo) {
