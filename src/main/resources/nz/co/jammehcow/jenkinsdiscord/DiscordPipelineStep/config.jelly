@@ -10,7 +10,7 @@
     <f:textbox />
   </f:entry>
   <f:entry title="Build Result" field="result">
-    <f:textbox>
+    <f:textbox />
   </f:entry>
   <f:entry title="Thumbnail" field="thumbnail">
     <f:textbox />
