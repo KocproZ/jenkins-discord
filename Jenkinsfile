@@ -11,6 +11,6 @@ node {
     }
 
     stage('Archive') {
-        archiveArtifacts 'target/jenkins-discord.hpi'
+        archiveArtifacts 'target/discord-notifier.hpi'
     }
 }
