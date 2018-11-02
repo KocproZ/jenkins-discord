@@ -11,12 +11,13 @@
   </parent>
 
   <name>Discord Notifier</name>
-  <description>Discord Notifier allows you to send Discord embeds about your builds via Discord's webhook functionality.</description>
+  <description>Discord Notifier allows you to send Discord embeds about your builds via Discord's webhooks.
+  </description>
   <url>https://jenkins.b.snet.ovh/job/Discord-notifier/</url>
 
   <groupId>nz.co.jammehcow</groupId>
-  <artifactId>jenkins-discord</artifactId>
-    <version>1.4.1</version>
+  <artifactId>discord-notifier</artifactId>
+  <version>1.4.1</version>
   <packaging>hpi</packaging>
 
   <properties>
