@@ -1,3 +1,8 @@
+# Read me!
+
+This repo has been moved to [jenkinsci organization](https://github.com/jenkinsci/discord-notifier-plugin). Please submit issues/PRs there.
+
+
 # Discord Notifier
 
 Discord Notifier provides a bridge between Jenkins and Discord through the built-in webhook functionality.
